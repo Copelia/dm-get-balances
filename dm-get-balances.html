@@ -1,0 +1,77 @@
+<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../iron-ajax/iron-ajax.html">
+
+<dom-module id="dm-get-balances">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+
+  <iron-ajax
+    auto
+    url="https://extra-server.herokuapp.com/electronicTicketed/accounts/v1/accounts/717533/current-balances/"
+    handle-as="json"
+    on-response="_getBalanceData"
+  /><iron-ajax>  
+
+  </template>
+
+  <script>
+    /**
+     * `dm-get-balances`
+     * componente para servicio de balance
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class DmGetBalances extends Polymer.Element {
+      static get is() { return 'dm-get-balances'; }
+      static get properties() {
+        return {
+
+        };
+      }
+      
+      _getBalanceData(data){
+        const dataArray = data.detail.response.data;
+        const cardArray = [];
+        const req = data.detail;
+        console.log('status', req.status, req.statusText);
+        
+
+        dataArray.forEach(function(item) {
+          var translatedKey ;
+          let englishKey = item.balanceType;
+          if (englishKey === "AVAILABLE_BALANCE"){
+            var translatedKey = "SALDO DISPONIBLE"
+          } else if (englishKey === "INVESTMENT_BALANCE"){
+            var translatedKey = "SALDO DE INVERSIÓN"
+          } else if(englishKey === "WITHHELD_DEPOSIT_BALANCE"){
+            var translatedKey = "SALDO DE DEPÓSITO"
+          } else if(englishKey === "WITHHELD_WITHDRAWAL_BALANCE"){
+            var translatedKey = "SALDO DE RETIRO"
+          } else if(englishKey === "TOTAL_BALANCE"){
+            var translatedKey = "SALDO TOTAL"
+          };
+          
+          let itemDescription = {
+            'key': translatedKey,
+            'value': item.amount
+          };
+          cardArray.push(itemDescription);
+        }.bind(this));
+        console.log(cardArray);
+        this.listService = cardArray;
+
+        this.dispatchEvent(new customEvent('workplace-info', {detail:data}))
+        
+      };
+
+    }
+
+    window.customElements.define(DmGetBalances.is, DmGetBalances);
+  </script>
+</dom-module>
