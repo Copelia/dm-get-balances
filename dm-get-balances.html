@@ -64,11 +64,9 @@
         }.bind(this));
         console.log(cardArray);
         // this.listService = cardArray;
-        
-        this.dispatchEvent(new customEvent('on-balance-info', {detail: {cardArray, status}}));
+        this.dispatchEvent(new CustomEvent('on-balance-info', {detail: {cardArray, status}}));
         
       };
-
 
     }
 
