@@ -10,8 +10,8 @@
     </style>
 
   <iron-ajax
-    auto
-    url="https://extra-server.herokuapp.com/electronicTicketed/accounts/v1/accounts/717533/current-balances/"
+    id="elajax"
+    url="[[_url]]"
     handle-as="json"
     on-response="_getBalanceData"
   /><iron-ajax>  
@@ -31,10 +31,22 @@
       static get is() { return 'dm-get-balances'; }
       static get properties() {
         return {
-
+          id:{
+            type: String,
+            observer: '_startRequest'
+          },
+          _url:{
+            type: String
+          }
         };
       }
       
+      _startRequest(id){
+        this._url = "https://extra-server.herokuapp.com/electronicTicketed/accounts/v1/accounts/"+ id +"/current-balances/";
+        this.$.elajax.generateRequest();
+      }
+
+
       _getBalanceData(data){
         const dataArray = data.detail.response.data;
         const cardArray = [];
@@ -64,7 +76,7 @@
         }.bind(this));
         console.log(cardArray);
         // this.listService = cardArray;
-        this.dispatchEvent(new CustomEvent('on-balance-info', {detail: {cardArray, status}}));
+        this.dispatchEvent(new CustomEvent('balance-info', {detail: {cardArray, status}}));
         
       };
 
